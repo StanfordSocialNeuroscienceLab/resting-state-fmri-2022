@@ -1,2 +1,5 @@
-
 *.csv
+Analysis/bids_/*
+*.DS_Store
+*/99-Sandbox.ipynb
+*/.ipynb_checkpoints
