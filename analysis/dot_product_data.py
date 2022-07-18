@@ -12,7 +12,11 @@ Ian Richard Ferguson | Stanford University
 """
 
 # --- Imports
-import glob, os, sys
+import glob, os, sys, warnings
+
+# My toxic trait
+warnings.filterwarnings('ignore')
+
 from bids import BIDSLayout
 from tqdm import tqdm
 import numpy as np
@@ -77,7 +81,7 @@ def dictionary_to_dataframe(manifest, subjects):
     """
 
     # Base DataFrame to append into
-    output = pd.DataFrame(columns=["subject", "subject_comparison", "dot_product"])
+    output = pd.DataFrame(columns=subjects, index=subjects)
 
     # Outer for loop (subject ID)
     for left in subjects:
@@ -86,23 +90,26 @@ def dictionary_to_dataframe(manifest, subjects):
         for right in subjects:
 
             # Extract and flatten RS matrices for each subject
-            left_matrix = manifest[left].flatten()
-            right_matrix = manifest[right].flatten()
+            try:
+                left_matrix = manifest[left].flatten()
+            except KeyError:
+                print(f"Missing key: {left}")
+                continue
+
+            try:
+                right_matrix = manifest[right].flatten()
+            except KeyError:
+                print(f"Missing key: {right}")
+                continue
 
             # Calculate dot product 
             value = np.dot(left_matrix, right_matrix)
 
-            # Create temporary DF 
-            temp_df = pd.DataFrame({
-                "subject": f"sub-{left}",
-                "subject_comparison": f"sub-{right}",
-                "dot_product": value
-            }, index=[0])
+            # Assign dot product value to row / column pair (l/r)
+            output.loc[left, right] = value
 
-            # Add to output DF
-            output = output.append(temp_df, ignore_index=True)
-
-    return output.reset_index(drop=True)
+    
+    return output
 
 
 
@@ -125,7 +132,7 @@ def main():
     dot_product_data = dictionary_to_dataframe(container, subjects)
 
     # Save locally
-    dot_product_data.to_csv("./RS_dot_product_data.csv", index=False)
+    dot_product_data.to_csv("./RS_dot_product_data.csv", index=True)
 
 
 
