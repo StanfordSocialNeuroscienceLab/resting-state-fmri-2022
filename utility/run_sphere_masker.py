@@ -36,7 +36,7 @@ def jsonify(
 
     if layers_to_iso:
         #E.g., layers_to_iso = {'Suggested System': 'Default Mode Network'}
-        key = layers_to_iso.keys()[0]
+        key = list(layers_to_iso.keys())[0]
         val = layers_to_iso[key]
 
         DF = DF[DF[key] == val].reset_index(drop=True)
@@ -90,7 +90,9 @@ def sphere_masker(
     )
 
     # Derive single image from GLMX
-    bold, confounds = bids_data()
+    bold, confounds = bids_data(
+        subject=subject
+    )
 
     # Fit time series
     time_series = masker.fit_transform(bold, confounds=[confounds])
@@ -113,13 +115,16 @@ def bids_data(subject: RestingState):
     
     for var in confound_data.columns:
         if "motion_outlier" in var:
-            regressors += var
+            regressors += [var]
         elif "comp_cor" in var:
-            regressors += var
+            regressors += [var]
         else:
             continue
 
     clean_confounds = confound_data.loc[:, regressors]
+
+    # Mean impute all columns
+    clean_confounds = clean_confounds.fillna(clean_confounds.mean())
 
     return brain_data, clean_confounds
 
@@ -154,6 +159,8 @@ def run():
         suppress=True
     )
 
+    print(f"\n== Initialized sub-{sub_id} ==\n")
+
 
     # -- Get region data
     power = pd.read_csv("./power_atlas_info.csv")
@@ -172,6 +179,8 @@ def run():
     region_labels = list(region_dict.keys())
     region_coords = list(region_dict.values())
 
+    print(f"\n== Extracted regions ==\n")
+
 
     # -- Run timeseries
     time_series = sphere_masker(
@@ -179,10 +188,14 @@ def run():
         subject=sub
     )
 
+    print(f"\n== Run timeseries ==\n")
+
     # -- Run correlation matrix
     matrix = correlation_matrix(
         time_series=time_series
     )
+
+    print(f"\n== Fit correlation matrix ==\n")
 
     # -- Save output
     filename = f"sub-{sub.sub_id}_power_atlas_dmn"
