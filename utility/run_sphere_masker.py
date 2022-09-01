@@ -22,7 +22,8 @@ from glm_express import RestingState
 def jsonify(
     DF: pd.DataFrame, 
     layers_to_nest: str = None,
-    layers_to_iso: dict = None
+    layers_to_iso: dict = None,
+    group_by: str = None
     ) -> dict:
     """
     Quick script to convert DataFrame object
@@ -43,22 +44,39 @@ def jsonify(
 
     output = {}
 
-    for ix, val in enumerate(DF["ROI"]):
+    if not group_by:
+        for ix, val in enumerate(DF["ROI"]):
 
-        if layers_to_nest:
-            roi = DF["ROI"][ix]
-            l1 = DF[layers_to_nest][ix]
+            if layers_to_nest:
+                roi = DF["ROI"][ix]
+                l1 = DF[layers_to_nest][ix]
 
-            key_name = f"{roi}_{l1.replace(' ', '_').lower()}"
+                key_name = f"{roi}_{l1.replace(' ', '_').lower()}"
 
-        else:
-            key_name = DF["ROI"][ix]
+            else:
+                key_name = DF["ROI"][ix]
 
-        output[key_name] = [
-            float(DF["x"][ix]),
-            float(DF["y"][ix]),
-            float(DF["z"][ix])
-        ]
+            output[key_name] = [
+                float(DF["x"][ix]),
+                float(DF["y"][ix]),
+                float(DF["z"][ix])
+            ]
+
+    else:
+        for value in DF[group_by].unique():
+            
+            temp = DF[DF[group_by] == value].reset_index(drop=True)
+
+            output[value] = []
+
+            for ix, coord in enumerate(temp["x"]):
+                coordinates = [
+                    float(coord),
+                    float(temp["y"][ix]),
+                    float(temp["z"][ix])
+                ]
+
+                output[value].append(coordinates)
 
     return output
 
@@ -171,8 +189,7 @@ def run():
 
     region_dict = jsonify(
         DF=power,
-        layers_to_iso=iso_dict,
-        layers_to_nest="Level 3"
+        group_by="Suggested System"
     )
 
 
