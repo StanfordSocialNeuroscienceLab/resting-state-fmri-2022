@@ -60,7 +60,12 @@ def easy_load(path: os.path) -> np.ndarray:
     """
 
     with open(path, "rb") as incoming:
-        return np.load(incoming)
+        loaded_array = np.load(incoming)
+
+    # Get indices of upper triangle NOT including diagonal 
+    indices = np.triu_indices_from(loaded_array, k=1)
+
+    return loaded_array[indices]
 
 
 
