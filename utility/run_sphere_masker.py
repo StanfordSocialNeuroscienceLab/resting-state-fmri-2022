@@ -132,9 +132,7 @@ def bids_data(subject: RestingState):
     regressors = subject.confound_regressor_names
     
     for var in confound_data.columns:
-        if "motion_outlier" in var:
-            regressors += [var]
-        elif "comp_cor" in var:
+        if "comp_cor" in var:
             regressors += [var]
         else:
             continue
@@ -142,7 +140,7 @@ def bids_data(subject: RestingState):
     clean_confounds = confound_data.loc[:, regressors]
 
     # Mean impute all columns
-    clean_confounds = clean_confounds.fillna(clean_confounds.mean())
+    clean_confounds = clean_confounds.fillna(0)
 
     return brain_data, clean_confounds
 
@@ -193,15 +191,18 @@ def run():
     )
 
 
-    region_labels = list(region_dict.keys())
-    region_coords = list(region_dict.values())
+    region_dict = region_dict["Default mode"]
+
+
+    #region_labels = list(region_dict.keys())
+    #region_coords = list(region_dict.values())
 
     print(f"\n== Extracted regions ==\n")
 
 
     # -- Run timeseries
     time_series = sphere_masker(
-        regions_to_use=region_coords,
+        regions_to_use=region_dict,
         subject=sub
     )
 
@@ -217,13 +218,13 @@ def run():
     # -- Save output
     filename = f"sub-{sub.sub_id}_power_atlas_dmn"
 
-    sub.plot_correlation_matrix(
+    """sub.plot_correlation_matrix(
         matrix=matrix,
         show_plot=False,
         save_local=True,
-        labels=region_labels,
+        #labels=region_labels,
         custom_title=filename
-    )
+    )"""
 
     with open(os.path.join(sub.first_level_output, "models", f"{filename}.npy"), "wb") as outgoing:
         np.save(outgoing, matrix)
