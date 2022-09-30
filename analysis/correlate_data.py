@@ -1,5 +1,4 @@
 #!/bin/python3
-
 """
 About this Script
 
@@ -11,7 +10,6 @@ We'll accomplish the following:
 Ian Richard Ferguson | Stanford University
 """
 
-# --- Imports
 import glob, os, sys, warnings
 
 # My toxic trait
@@ -24,7 +22,9 @@ import numpy as np
 import pandas as pd
 
 
-# --- Functions
+##########
+
+
 def get_all_matrices(path_to_glmx, subjects):
     """
     Gets all first level RS matrices and 
@@ -135,6 +135,8 @@ def main():
     # Save locally
     dot_product_data.to_csv("./RS_correlated_data.csv", index=True)
 
+
+##########
 
 
 if __name__ == "__main__":

@@ -1,5 +1,4 @@
 #!/bin/python3
-
 """
 About this Script
 
@@ -11,20 +10,17 @@ as Numpy arrays
 Ian Richard Ferguson | Stanford University
 """
 
-# --- Imports
 import os, sys
 import pandas as pd
 import numpy as np
 from glm_express import RestingState
 
 
-# --- Functions
-def jsonify(
-    DF: pd.DataFrame, 
-    layers_to_nest: str = None,
-    layers_to_iso: dict = None,
-    group_by: str = None
-    ) -> dict:
+##########
+
+
+def jsonify(DF: pd.DataFrame, layers_to_nest: str = None,
+            layers_to_iso: dict = None, group_by: str = None) -> dict:
     """
     Quick script to convert DataFrame object
     to a dictionary, where the keys are ROI's and
@@ -82,10 +78,7 @@ def jsonify(
 
 
 
-def sphere_masker(
-    regions_to_use: list, 
-    subject: RestingState
-    ) -> np.ndarray:
+def sphere_masker(regions_to_use: list, subject: RestingState) -> np.ndarray:
     """
     Wraps functionality from the nilearn.maskers.NifitSphereMasker object
 
@@ -226,12 +219,20 @@ def run():
         custom_title=filename
     )"""
 
-    with open(os.path.join(sub.first_level_output, "models", f"{filename}.npy"), "wb") as outgoing:
+    path_name = os.path.join(
+        sub.first_level_output,
+        "models",
+        f"{filename}.npy"
+    )
+
+    with open(path_name, "wb") as outgoing:
         np.save(outgoing, matrix)
 
 
     print(f"\n\n** Subject {sub.sub_id} Run Successfully **\n\n")
 
+
+##########
 
 
 if __name__ == "__main__":

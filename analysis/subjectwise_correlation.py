@@ -1,5 +1,4 @@
 #!/bin/python3
-
 """
 About this Script
 
@@ -9,7 +8,6 @@ and calculate a subject-to-subject correlations
 Ian Richard Ferguson | Stanford University
 """
 
-# --- Imports
 import glob, os, warnings, sys
 
 warnings.filterwarnings("ignore")
@@ -21,7 +19,9 @@ import numpy as np
 import pandas as pd
 
 
-# --- Functions
+##########
+
+
 def get_all_matrices(bids_root: os.path) -> dict:
     """
     Loops through all BIDS subjects
@@ -122,6 +122,8 @@ def run():
 
     output.to_csv("./subjectwise_correlations_dmn.csv", index=False)
 
+
+##########
 
 
 if __name__ == "__main__":
