@@ -41,7 +41,7 @@ def get_all_matrices(bids_root: os.path) -> dict:
             bids_root,
             "derivatives/first-level-output",
             f"sub-{sub}/task-rest/models",
-            f"sub-{sub}_task-rest_aggregated.npy"
+            f"sub-{sub}_power_atlas_dmn.npy"
         )
 
         if os.path.exists(path):
@@ -120,7 +120,7 @@ def run():
                     ignore_index=True
                 )
 
-    output.to_csv("./subjectwise_correlations.csv", index=False)
+    output.to_csv("./subjectwise_correlations_dmn.csv", index=False)
 
 
 
