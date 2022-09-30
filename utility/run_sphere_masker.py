@@ -22,7 +22,7 @@ from glm_express import RestingState
 def jsonify(DF: pd.DataFrame, layers_to_nest: str = None,
             layers_to_iso: dict = None, group_by: str = None) -> dict:
     """
-    Quick script to convert DataFrame object
+    Quick function to convert DataFrame object
     to a dictionary, where the keys are ROI's and
     the values are XYZ coords
 
